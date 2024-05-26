@@ -1,4 +1,14 @@
 #![allow(non_snake_case)]
+#![allow(unused_parens)]
+pub mod instructions;
+
+fn io(adr: &u8, acc: &mut u16) {
+    match *adr{
+        1=>instructions::inp(acc),
+        2=>instructions::out(acc),
+        _=>println!("error : invalid address"),
+    }
+}
 
 fn executeInstruction(pc: &mut u8, acc: &mut u16, flag: &mut bool, mem: &mut Vec<u16>) {
 
@@ -6,8 +16,20 @@ fn executeInstruction(pc: &mut u8, acc: &mut u16, flag: &mut bool, mem: &mut Vec
 
     let instruction: u8 = (mem[usize::from(index)]/100) as u8;
     let address: u8 = (mem[usize::from(index)]%100) as u8;
+    let mut value: &mut u16 = &mut mem[usize::from(address)];
 
-    
+    match instruction{
+        1=>instructions::add(acc, flag, value),
+        2=>instructions::sub(acc, flag, value),
+        3=>instructions::store(acc, &mut value),
+        5=>instructions::load(acc, flag,value),
+        6=>instructions::branch(pc, &address),
+        7=>instructions::branchZero(pc, &address, acc, flag),
+        8=>instructions::branchPositive(pc, &address, flag),
+        9=>io(&address, acc),
+        _=>println!("error : invalid instruction"),
+    }
+    *pc += 1;
 }
 
 fn main() {
@@ -17,5 +39,15 @@ fn main() {
     let mut programCounter: u8 = 0;
     let mut flag: bool = false;
 
-    println!("Size : {}", memory[99]);
+    memory[0] = 901;
+    memory[1] = 350;
+    memory[2] = 901;
+    memory[3] = 150;
+    memory[4] = 902;
+
+
+    while(memory[usize::from(programCounter)] != 0) {
+        executeInstruction(&mut programCounter, &mut accumulator, &mut flag, &mut memory);
+    }
+
 }
