@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 #![allow(unused_parens)]
 pub mod instructions;
+pub mod compiler;
 
 fn io(adr: &u8, acc: &mut u16) {
     match *adr{
@@ -38,13 +39,8 @@ fn main() {
     let mut accumulator: u16 = 0;
     let mut programCounter: u8 = 0;
     let mut flag: bool = false;
-
-    memory[0] = 901;
-    memory[1] = 350;
-    memory[2] = 901;
-    memory[3] = 150;
-    memory[4] = 902;
-
+    
+    let _result = compiler::compileToFile();
 
     while(memory[usize::from(programCounter)] != 0) {
         executeInstruction(&mut programCounter, &mut accumulator, &mut flag, &mut memory);

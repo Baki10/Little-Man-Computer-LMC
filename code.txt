@@ -1,0 +1,6 @@
+INP
+STA 50
+INP
+ADD 50
+OUT
+HLT
