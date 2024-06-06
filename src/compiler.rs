@@ -1,9 +1,9 @@
-use std::io::Write;
+use std::{fs, io::Write};
 
 
 pub fn compileToFile() -> std::io::Result<()> {
 
-    let fileContent = std::fs::read_to_string("code.txt").expect("error: unable to read the file");
+    let fileContent = fs::read_to_string("code.txt").expect("error: unable to read the file");
     let lines = fileContent.split("\n");
     let mut outputCode = String::new();
 
@@ -13,7 +13,7 @@ pub fn compileToFile() -> std::io::Result<()> {
         outputCode.push_str("\n");
     }
 
-    let mut outputFile = std::fs::File::create("ouput.lmc")?;
+    let mut outputFile = fs::File::create("output.lmc")?;
     outputFile.write_all(outputCode.as_bytes()).expect("error: unable to write to the file");
     Ok(())
 }
@@ -37,8 +37,22 @@ fn decodeLine(line: &str) -> String {
         "INP" => decodedLine.push_str("901"),
         "OUT" => decodedLine.push_str("902"),
         "HLT" => decodedLine.push_str("000"),
-        _ => return "".to_string(),
+        _ => return command.to_string(),
     }
 
     return decodedLine;
+}
+
+pub fn runCompiledFile(mem: &mut Vec<u16>) {
+    let fileContent: String = fs::read_to_string("output.lmc").expect("error: unable to read the file");
+    let lines = fileContent.split("\n");
+
+    let mut nextMem = 1;
+    for line in lines {
+        if(line != "") {
+            mem[nextMem] = line.parse::<u16>().unwrap();
+        }
+        nextMem += 1;
+        if(nextMem > 99) { break; }
+    }
 }
