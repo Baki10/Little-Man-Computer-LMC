@@ -43,7 +43,7 @@ fn decodeLine(line: &str) -> String {
     return decodedLine;
 }
 
-pub fn runCompiledFile(mem: &mut Vec<u16>) {
+pub fn compiledFileToMem(mem: &mut Vec<u16>) {
     let fileContent: String = fs::read_to_string("output.lmc").expect("error: unable to read the file");
     let lines = fileContent.split("\n");
 
