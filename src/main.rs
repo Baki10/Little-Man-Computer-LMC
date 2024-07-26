@@ -1,27 +1,28 @@
 #![allow(non_snake_case)]
 #![allow(unused_parens)]
+
 pub mod instructions;
 pub mod compiler;
 
 fn helpFunction() {
     println!("-------------------------------------------------");
     println!("help - returns a list of functions");
-    println!("compile - compiles the file down to .lmc format");
-    println!("run - runs the compiled .lmc file");
+    println!("compile <input file in current directory> <output file> - compiles the file down to .lmc format");
+    println!("run <file in current directory> - runs the compiled .lmc file");
     println!("-------------------------------------------------");
 }
 
-fn compileFunction() {
-    let _result = compiler::compileToFile();
+fn compileFunction(arg: &str) {
+    let _result = compiler::compileToFile(arg);
 }
 
-fn runFunction() {
+fn runFunction(arg: &str) {
     let mut memory: Vec<u16> = vec![0; 100];
     let mut accumulator: u16 = 0;
     let mut programCounter: u8 = 1;
     let mut flag: bool = false;
 
-    compiler::compiledFileToMem(&mut memory);
+    compiler::compiledFileToMem(&mut memory, arg);
 
     println!("---------------------------");
 
@@ -35,18 +36,29 @@ fn runFunction() {
 
 fn main() {
 
-    let mut consoleInput: String = String::new();
+    let mut command: String = String::new();
 
-    while(consoleInput != "q")
-    {
-        consoleInput = String::new();
+    while(command != "q") {
+        let mut consoleInput: String = String::new();
         std::io::stdin().read_line(&mut consoleInput).expect("error: unable to read user input");
-        consoleInput = consoleInput.replace("\r\n", "");
+        let tokens: Vec<&str> = consoleInput.split(" ").collect();
+        let mut arg: String = String::new();
+
+        if(tokens.len() == 1) {
+            command = tokens[0].replace("\r\n", "");
+            arg = "".to_string();
+        } else {
+            command = tokens[0].to_string();
+            for i in 1..tokens.len() {
+                arg += &tokens[i].replace("\r\n", "");
+                if i != tokens.len()-1 { arg += " ";}
+            }
+        }
   
-        match consoleInput.as_str() {
+        match command.as_str() {
            "help" => helpFunction(),
-           "compile" => compileFunction(),
-           "run" => runFunction(),
+           "compile" => compileFunction(arg.as_str()),
+           "run" => runFunction(arg.as_str()),
            _ => continue,
         }
     }

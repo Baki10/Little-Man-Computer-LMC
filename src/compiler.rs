@@ -1,9 +1,8 @@
 use std::{fs, io::Write};
 
 
-pub fn compileToFile() -> std::io::Result<()> {
-
-    let fileContent = fs::read_to_string("code.txt").expect("error: unable to read the file");
+pub fn compileToFile(filePath: &str) -> std::io::Result<()> {
+    let fileContent = fs::read_to_string(filePath).expect("error: unable to read the file");
     let lines = fileContent.split("\n");
     let mut outputCode = String::new();
 
@@ -13,7 +12,10 @@ pub fn compileToFile() -> std::io::Result<()> {
         outputCode.push_str("\n");
     }
 
-    let mut outputFile = fs::File::create("output.lmc")?;
+    let mut newPath = filePath.to_string();
+    newPath.replace_range(newPath.len()-3..newPath.len(), "lmc");
+
+    let mut outputFile = fs::File::create(newPath)?;
     outputFile.write_all(outputCode.as_bytes()).expect("error: unable to write to the file");
     Ok(())
 }
@@ -43,8 +45,8 @@ fn decodeLine(line: &str) -> String {
     return decodedLine;
 }
 
-pub fn compiledFileToMem(mem: &mut Vec<u16>) {
-    let fileContent: String = fs::read_to_string("output.lmc").expect("error: unable to read the file");
+pub fn compiledFileToMem(mem: &mut Vec<u16>, filePath: &str) {
+    let fileContent: String = fs::read_to_string(filePath).expect("error: unable to read the file");
     let lines = fileContent.split("\n");
 
     let mut nextMem = 1;

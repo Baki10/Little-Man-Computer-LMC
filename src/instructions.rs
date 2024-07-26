@@ -60,12 +60,16 @@ fn branchZero(pc: &mut u8, adr: &u8, acc: &u16, flag: &bool) {
     if(*acc == 0 && *flag == false)
     {
         *pc = *adr;
+    } else {
+        *pc += 1;
     }
 }
 fn branchPositive(pc: &mut u8, adr: &u8, flag: &bool) {
     if(*flag == false)
     {
         *pc = *adr;
+    } else {
+        *pc += 1;
     }
 }
 fn inp(acc: &mut u16) {
