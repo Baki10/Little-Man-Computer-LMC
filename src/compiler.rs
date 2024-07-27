@@ -2,7 +2,7 @@ use std::{fs, io::Write};
 
 
 pub fn compileToFile(filePath: &str) -> std::io::Result<()> {
-    let fileContent = fs::read_to_string(filePath).expect("error: unable to read the file");
+    let fileContent = fs::read_to_string(filePath)?;
     let lines = fileContent.split("\n");
     let mut outputCode = String::new();
 
@@ -45,16 +45,17 @@ fn decodeLine(line: &str) -> String {
     return decodedLine;
 }
 
-pub fn compiledFileToMem(mem: &mut Vec<u16>, filePath: &str) {
-    let fileContent: String = fs::read_to_string(filePath).expect("error: unable to read the file");
+pub fn compiledFileToMem(mem: &mut Vec<u16>, filePath: &str) -> std::io::Result<()> {
+    let fileContent: String = fs::read_to_string(filePath)?;
     let lines = fileContent.split("\n");
 
     let mut nextMem = 1;
     for line in lines {
-        if(line != "") {
+        if line != "" {
             mem[nextMem] = line.parse::<u16>().unwrap();
         }
         nextMem += 1;
-        if(nextMem > 99) { break; }
+        if nextMem > 99 { break; }
     }
+    Ok(())
 }

@@ -2,12 +2,11 @@
 
 pub fn executeInstruction(pc: &mut u8, acc: &mut u16, flag: &mut bool, mem: &mut Vec<u16>) {
     let index: u8 = *pc;
-
     let instruction: u8 = (mem[usize::from(index)]/100) as u8;
     let address: u8 = (mem[usize::from(index)]%100) as u8;
     let mut value: &mut u16 = &mut mem[usize::from(address)];
 
-    match instruction{
+    match instruction {
         1=>add(acc, flag, value),
         2=>sub(acc, flag, value),
         3=>store(acc, &mut value),
@@ -19,14 +18,13 @@ pub fn executeInstruction(pc: &mut u8, acc: &mut u16, flag: &mut bool, mem: &mut
         _=>println!("error : invalid instruction"),
     }
     
-    if (instruction < 6 || instruction > 8)
-    {
+    if instruction < 6 || instruction > 8 {
         *pc += 1;
     }
 }
 
 fn io(adr: &u8, acc: &mut u16) {
-    match *adr{
+    match *adr {
         1=>inp(acc),
         2=>out(acc),
         _=>println!("error : invalid address"),
@@ -34,14 +32,16 @@ fn io(adr: &u8, acc: &mut u16) {
 }
 fn add(acc: &mut u16, flag: &mut bool, val: &u16) {
     *acc += *val;
-    if(*acc > 999) { *flag = !*flag; *acc %= 1000;}
+    if *acc > 999 {
+        *flag = !*flag;
+        *acc %= 1000;
+    }
 }
 fn sub(acc: &mut u16, flag: &mut bool, val: &u16) {
     
-    if(*acc >= *val) { 
+    if *acc >= *val { 
         *acc -= *val;
-    }
-    else {
+    } else {
         *flag = !*flag;
         *acc = 1000 - (*val - *acc);
     } 
@@ -57,16 +57,14 @@ fn branch(pc: &mut u8, adr: &u8) {
     *pc = *adr;
 }
 fn branchZero(pc: &mut u8, adr: &u8, acc: &u16, flag: &bool) {
-    if(*acc == 0 && *flag == false)
-    {
+    if *acc == 0 && *flag == false {
         *pc = *adr;
     } else {
         *pc += 1;
     }
 }
 fn branchPositive(pc: &mut u8, adr: &u8, flag: &bool) {
-    if(*flag == false)
-    {
+    if *flag == false {
         *pc = *adr;
     } else {
         *pc += 1;

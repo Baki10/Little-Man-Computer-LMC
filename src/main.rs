@@ -1,19 +1,25 @@
 #![allow(non_snake_case)]
 #![allow(unused_parens)]
 
+
 pub mod instructions;
 pub mod compiler;
 
 fn helpFunction() {
-    println!("-------------------------------------------------");
-    println!("help - returns a list of functions");
-    println!("compile <input file in current directory> <output file> - compiles the file down to .lmc format");
-    println!("run <file in current directory> - runs the compiled .lmc file");
-    println!("-------------------------------------------------");
+    println!("---------------------------------------------------------------");
+    println!("<> help - returns a list of functions");
+    println!("<> compile <file path> - compiles the file down to .lmc format");
+    println!("<> run <file path> - runs the compiled .lmc file");
+    println!("<> q - quits the program");
+    println!("---------------------------------------------------------------");
 }
 
 fn compileFunction(arg: &str) {
-    let _result = compiler::compileToFile(arg);
+    let result = compiler::compileToFile(arg);
+    match result {
+        Ok(()) => println!("<> File successfully compiled..."),
+        Err(_e) => println!("<> Unable to compile the file (invalid path)"),
+    }
 }
 
 fn runFunction(arg: &str) {
@@ -22,36 +28,41 @@ fn runFunction(arg: &str) {
     let mut programCounter: u8 = 1;
     let mut flag: bool = false;
 
-    compiler::compiledFileToMem(&mut memory, arg);
+    let result = compiler::compiledFileToMem(&mut memory, arg);
+    match result {
+        Ok(()) => println!("<> Successfully running the file..."),
+        Err(_e) => { println!("<> Unable to run the file (invalid path)"); return },
+    }
 
     println!("---------------------------");
 
     let mut counter: i32 = 0;
-    while(memory[usize::from(programCounter)] != 0 && counter < 500) {
+    while memory[usize::from(programCounter)] != 0 && counter < 500 {
         instructions::executeInstruction(&mut programCounter, &mut accumulator, &mut flag, &mut memory);
         counter+=1;
     }
+
     println!("---------------------------");
+    println!("<> Program hatled...");
 }
 
 fn main() {
-
     let mut command: String = String::new();
 
-    while(command != "q") {
+    while command != "q" {
         let mut consoleInput: String = String::new();
         std::io::stdin().read_line(&mut consoleInput).expect("error: unable to read user input");
         let tokens: Vec<&str> = consoleInput.split(" ").collect();
         let mut arg: String = String::new();
 
-        if(tokens.len() == 1) {
+        if tokens.len() == 1 {
             command = tokens[0].replace("\r\n", "");
             arg = "".to_string();
         } else {
             command = tokens[0].to_string();
             for i in 1..tokens.len() {
                 arg += &tokens[i].replace("\r\n", "");
-                if i != tokens.len()-1 { arg += " ";}
+                if i != tokens.len()-1 { arg += " "; }
             }
         }
   
@@ -62,4 +73,5 @@ fn main() {
            _ => continue,
         }
     }
+    println!("<> Closing the program...");
 }
